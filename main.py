@@ -3,10 +3,12 @@ import sklearn
 
 from models.FCN import Classifier_FCN
 from utils.helper  import *
+from utils.constants  import *
 
 
-def fit_classifier(dataset_name):
+def fit_classifier(dataset_name,output_directory):
     df = read_dataset(dataset_name)
+        
     x_train = df[0]
     y_train = df[1]
     x_test = df[2]
@@ -29,9 +31,19 @@ def fit_classifier(dataset_name):
         x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 
     input_shape = x_train.shape[1:]
-    classifier = Classifier_FCN("results/", input_shape, nb_classes, verbose=True)
+    classifier = Classifier_FCN(output_directory, input_shape, nb_classes, verbose=True)
 
     classifier.fit(x_train, y_train, x_test, y_test, y_true)
 
-
-
+for dataset_name in UNIVARIATE_DATASET_NAMES_2018:
+    output_directory = 'results/' + '/' + dataset_name + '/'
+    test_dir_df_metrics = output_directory + 'df_metrics.csv'
+    if os.path.exists(test_dir_df_metrics):
+        print('Already done')
+    else:
+        create_directory(output_directory)
+        df = read_dataset(dataset_name)
+        fit_classifier(dataset_name,  output_directory)
+        print('DONE')
+        # the creation of this directory means
+        create_directory(output_directory + '/DONE')
