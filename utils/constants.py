@@ -1,6 +1,6 @@
 PATH_DATA = '/home/elnur/Desktop/UCRArchive_2018'
 
-UNIVARIATE_DATASET_NAMES_2018 = [ 'Earthquakes']
+UNIVARIATE_DATASET_NAMES_2018 = ['EOGVerticalSignal']
 
 ITERATIONS = 5  # nb of random runs for random initializations
 
