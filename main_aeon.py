@@ -7,7 +7,7 @@ from utils.helper import *
 from utils.constants import *
 from utils.utils import *
 
-def fit_classifier(output_directory):
+def fit_classifier(df, output_directory):
     x_train=df[0]
     y_train=df[1]
     x_val=df[2]
@@ -23,13 +23,13 @@ def fit_classifier(output_directory):
     callbacks = [reduce_lr,model_checkpoint]
 
     start_time = time.time() 
-    fcn_model = FCNClassifier(batch_size=mini_batch_size, epochs=2000,
-        verbose=True, validation_data=(x_val,y_val), callbacks=callbacks)
+    fcn_model = FCNClassifier(batch_size=mini_batch_size, n_epochs=2000,
+        verbose=True, callbacks=callbacks)
 
     hist = fcn_model.fit(x_train, y_train)
-
     duration = time.time() - start_time
-    fcn_model.save(output_directory+'last_model.hdf5')
+    fcn_model.save_last_model(output_directory + 'last_model.hdf5')
+    # fcn_model.save(output_directory+'last_model.hdf5')
     model = keras.models.load_model(output_directory+'best_model.hdf5')
     y_pred = model.predict(x_val)
     # convert the predicted from binary to integer 

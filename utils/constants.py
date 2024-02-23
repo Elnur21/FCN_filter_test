@@ -1,6 +1,7 @@
 PATH_DATA = '/home/elnur/Desktop/UCRArchive_2018'
 
-UNIVARIATE_DATASET_NAMES_2018 = ['EOGVerticalSignal']
+UNIVARIATE_DATASET_NAMES_2018 = ['ArrowHead', 'BeetleFly', 'Ham', 'MoteStrain', 'OliveOil', 'Wine', 'Lightning7', 'InlineSkate', 'Beef', 'ACSF1', 'Yoga', 'GunPointOldVersusYoung',
+                 'FreezerSmallTrain', 'WordSynonyms', 'Car', 'ProximalPhalanxTW', 'InsectWingbeatSound','FaceAll', 'EOGVerticalSignal',  'Earthquakes']
 
 ITERATIONS = 5  # nb of random runs for random initializations
 
