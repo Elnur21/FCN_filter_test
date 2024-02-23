@@ -6,8 +6,6 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['font.sans-serif'] = 'Arial'
 
 from utils.constants import ARCHIVE_NAMES  as ARCHIVE_NAMES
 
