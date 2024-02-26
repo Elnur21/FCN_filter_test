@@ -268,9 +268,11 @@ def plot_filters(model_train, model_test,dataset_name):
 
     X_embedded_train = TSNE(n_components=2,perplexity=15, random_state=42).fit_transform(filters_reshaped_train)
     X_embedded_test = TSNE(n_components=2,perplexity=15, random_state=42).fit_transform(filters_reshaped_test)
-    
-    plt.scatter(X_embedded_train[:,0], X_embedded_train[:,1])
-    plt.scatter(X_embedded_test[:,0], X_embedded_test[:,1])
+    # X_embedded_test =  (X_embedded_test - np.min(X_embedded_test)) / (np.max(X_embedded_test) - np.min(X_embedded_test))
+    concat = np.concatenate((X_embedded_train, X_embedded_test)) 
+    concat =  (concat - np.min(concat)) / (np.max(concat) - np.min(concat))
+    plt.scatter(concat[:128,0], concat[:128,1])
+    plt.scatter(concat[128:,0], concat[128:,1])
 
     plt.title(f'{dataset_name} Scatter Plot of First Layer Filters')
     plt.xlabel('Filter')
