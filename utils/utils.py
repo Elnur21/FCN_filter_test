@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib
+from tensorflow.keras.losses import categorical_crossentropy
 
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
@@ -13,8 +14,8 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 
 
-def save_logs(output_directory, hist, y_pred, y_true, duration, lr=True, y_true_val=None, y_pred_val=None):
-    hist_df = pd.DataFrame(hist.history)
+def save_logs(output_directory, hist, y_pred, y_true, duration,val_acc, lr=True, y_true_val=None, y_pred_val=None):
+    hist_df = pd.DataFrame(hist.history.history)
     hist_df.to_csv(output_directory + 'history.csv', index=False)
 
     df_metrics = calculate_metrics(y_true, y_pred, duration, y_true_val, y_pred_val)
@@ -28,9 +29,9 @@ def save_logs(output_directory, hist, y_pred, y_true, duration, lr=True, y_true_
                                           'best_model_val_acc', 'best_model_learning_rate', 'best_model_nb_epoch'])
 
     df_best_model['best_model_train_loss'] = row_best_model['loss']
-    df_best_model['best_model_val_loss'] = row_best_model['val_loss']
+    # df_best_model['best_model_val_loss'] = val_loss
     df_best_model['best_model_train_acc'] = row_best_model['accuracy']
-    df_best_model['best_model_val_acc'] = row_best_model['val_accuracy']
+    df_best_model['best_model_val_acc'] = val_acc
     if lr == True:
         df_best_model['best_model_learning_rate'] = row_best_model['lr']
     df_best_model['best_model_nb_epoch'] = index_best_model
@@ -40,7 +41,7 @@ def save_logs(output_directory, hist, y_pred, y_true, duration, lr=True, y_true_
     # for FCN there is no hyperparameters fine tuning - everything is static in code
 
     # plot losses
-    plot_epochs_metric(hist, output_directory + 'epochs_loss.png')
+    # plot_epochs_metric(hist.history, output_directory + 'epochs_loss.png')
 
     return df_metrics
 
@@ -55,7 +56,41 @@ def plot_epochs_metric(hist, file_name, metric='loss'):
     plt.savefig(file_name, bbox_inches='tight')
     plt.close()
 
+def plot_filters(model):
+    conv_layers = [layer for layer in model.layers if 'conv' in layer.name]
 
+    for layer in conv_layers:
+    # Get the weights of the layer
+        filters, biases = layer.get_weights()
+        
+        # Normalize the filters
+        filters = (filters - np.min(filters)) / (np.max(filters) - np.min(filters))
+        
+        # Determine the number of filters in the layer
+        n_filters = filters.shape[-1]
+        
+        # Plot each filter
+        for i in range(n_filters):
+            # Get the ith filter
+            filter_i = filters[:, :, i]  # Assuming 2D filters, adjust if needed
+            
+            # Plot the filter
+            plt.figure()
+            plt.plot(filter_i)
+            plt.title(f'Filter {i+1}')
+            plt.savefig(f'filter_{i+1}.png')  # Save the figure
+
+def custom_evaluate(model, x_test, y_test):
+    y_pred = model.predict(x_test)
+    y_pred = np.argmax(y_pred , axis=1)
+    y_pred = np.round(y_pred).astype(int)
+
+    loss = -np.mean(y_test * np.log(y_pred) + (1 - y_test) * np.log(1 - y_pred))
+    print(loss)
+    
+    accuracy = np.mean(y_pred == y_test)
+    
+    return loss, accuracy 
 
 def calculate_metrics(y_true, y_pred, duration, y_true_val=None, y_pred_val=None):
     res = pd.DataFrame(data=np.zeros((1, 4), dtype=np.float64), index=[0],
