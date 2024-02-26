@@ -66,9 +66,12 @@ def plot_filters(model):
         # Normalize the filters
         filters = (filters - np.min(filters)) / (np.max(filters) - np.min(filters))
         
+        filters_reshaped = filters.reshape(-1, np.prod(filters.shape[1:]))
         # Determine the number of filters in the layer
         n_filters = filters.shape[-1]
         
+        for i in range(n_filters):
+            plt.scatter(range(len(filters_reshaped[i])), filters_reshaped[i], s=5)
         # Plot each filter
         for i in range(n_filters):
             # Get the ith filter
@@ -76,7 +79,7 @@ def plot_filters(model):
             
             # Plot the filter
             plt.figure()
-            plt.plot(filter_i)
+            plt.scatter(filter_i)
             plt.title(f'Filter {i+1}')
             plt.savefig(f'filter_{i+1}.png')  # Save the figure
 
