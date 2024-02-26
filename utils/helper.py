@@ -262,17 +262,12 @@ class Log:
 def plot_filters(model_train, model_test,dataset_name):
     filters_train, _ = [layer for layer in model_train.layers if 'conv' in layer.name][0].get_weights()
     filters_test, _ = [layer for layer in model_test.layers if 'conv' in layer.name][0].get_weights()
-    print(np.max(filters_train))
-    # filters_normalized = (filters - np.min(filters)) / (np.max(filters) - np.min(filters))
 
     filters_reshaped_train = filters_train.reshape(128,8)
     filters_reshaped_test = filters_test.reshape(128,8)
 
     X_embedded_train = TSNE(n_components=2,perplexity=15, random_state=42).fit_transform(filters_reshaped_train)
-    # X_embedded_train= (X_embedded_train - np.min(X_embedded_train)) / (np.max(X_embedded_train) - np.min(X_embedded_train))
-    print(np.max(X_embedded_train))
     X_embedded_test = TSNE(n_components=2,perplexity=15, random_state=42).fit_transform(filters_reshaped_test)
-    # X_embedded_test =  (X_embedded_test - np.min(X_embedded_test)) / (np.max(X_embedded_test) - np.min(X_embedded_test))
     
     plt.scatter(X_embedded_train[:,0], X_embedded_train[:,1])
     plt.scatter(X_embedded_test[:,0], X_embedded_test[:,1])
@@ -282,6 +277,7 @@ def plot_filters(model_train, model_test,dataset_name):
     plt.ylabel('Filter')
     create_directory("filters")
     plt.savefig("filters/"+dataset_name+"_filters.png")
+    plt.close()
 
 def create_directory(directory_path):
     if os.path.exists(directory_path):
