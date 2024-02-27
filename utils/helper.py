@@ -270,7 +270,7 @@ def plot_filters(model_train, model_test,dataset_name):
     concat = np.concatenate((filters_reshaped_train, filters_reshaped_test)) 
     concat =  (concat - np.min(concat)) / (np.max(concat) - np.min(concat))
 
-    tsne = TSNE(n_components=2, perplexity=15, random_state=42)
+    tsne = TSNE(n_components=2, perplexity=3, random_state=0)
     concat_dtw = dtw.distance_matrix_fast(concat.astype(np.double))
 
     print(concat_dtw.shape)
