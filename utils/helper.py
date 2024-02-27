@@ -260,7 +260,7 @@ class Log:
         print(f"{input}")
 
 
-def plot_filters(model_train, model_test,dataset_name):
+def plot_filters(model_train, model_test,dataset_name, perp):
     filters_train, _ = [layer for layer in model_train.layers if 'conv' in layer.name][0].get_weights()
     filters_test, _ = [layer for layer in model_test.layers if 'conv' in layer.name][0].get_weights()
 
@@ -270,10 +270,8 @@ def plot_filters(model_train, model_test,dataset_name):
     concat = np.concatenate((filters_reshaped_train, filters_reshaped_test)) 
     concat =  (concat - np.min(concat)) / (np.max(concat) - np.min(concat))
 
-    tsne = TSNE(n_components=2, perplexity=3, random_state=0)
+    tsne = TSNE(n_components=2, perplexity=perp, random_state=0)
     concat_dtw = dtw.distance_matrix_fast(concat.astype(np.double))
-
-    print(concat_dtw.shape)
 
     concat_tsne = tsne.fit_transform(concat_dtw)
     
@@ -284,8 +282,8 @@ def plot_filters(model_train, model_test,dataset_name):
     plt.title(f'{dataset_name} Scatter Plot of First Layer Filters')
     plt.xlabel('Filter')
     plt.ylabel('Filter')
-    create_directory("filters")
-    plt.savefig("filters/"+dataset_name+"_filters.png")
+    create_directory(f"filters_perplexity_{perp}")
+    plt.savefig(f"filters_perplexity_{perp}/"+dataset_name+"_filters.png")
     plt.close()
 
 def create_directory(directory_path):
