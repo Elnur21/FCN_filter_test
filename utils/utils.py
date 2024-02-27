@@ -84,16 +84,23 @@ def plot_filters(model):
             plt.savefig(f'filter_{i+1}.png')  # Save the figure
 
 def custom_evaluate(model, x_test, y_test):
-    y_pred = model.predict(x_test)
-    y_pred = np.argmax(y_pred , axis=1)
-    y_pred = np.round(y_pred).astype(int)
-
-    loss = -np.mean(y_test * np.log(y_pred) + (1 - y_test) * np.log(1 - y_pred))
-    print(loss)
+    # Predict the probabilities for each class
+    y_pred_probs = model.predict(x_test)
     
-    accuracy = np.mean(y_pred == y_test)
+    # Convert probabilities to class labels
+    y_pred_labels = np.argmax(y_pred_probs, axis=1)
+    
+    # Convert predicted labels to integers
+    y_pred_labels = y_pred_labels.astype(int)
+
+    # Calculate cross-entropy loss
+    loss = -np.mean(np.log(y_pred_probs[np.arange(len(y_test)), y_pred_labels]))
+    
+    # Calculate accuracy
+    accuracy = np.mean(y_pred_labels == y_test)
     
     return loss, accuracy 
+    
 
 def calculate_metrics(y_true, y_pred, duration, y_true_val=None, y_pred_val=None):
     res = pd.DataFrame(data=np.zeros((1, 4), dtype=np.float64), index=[0],
