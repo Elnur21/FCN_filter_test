@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.layers import Activation, Conv1D, BatchNormalization
 from sklearn.manifold import TSNE
+from dtaidistance import dtw
 
 import os
 import sys
@@ -266,13 +267,19 @@ def plot_filters(model_train, model_test,dataset_name):
     filters_reshaped_train = filters_train.reshape(128,8)
     filters_reshaped_test = filters_test.reshape(128,8)
 
-    X_embedded_train = TSNE(n_components=2,perplexity=15, random_state=42).fit_transform(filters_reshaped_train)
-    X_embedded_test = TSNE(n_components=2,perplexity=15, random_state=42).fit_transform(filters_reshaped_test)
-    
-    concat = np.concatenate((X_embedded_train, X_embedded_test)) 
+    concat = np.concatenate((filters_reshaped_train, filters_reshaped_test)) 
     concat =  (concat - np.min(concat)) / (np.max(concat) - np.min(concat))
-    plt.scatter(concat[:128,0], concat[:128,1])
-    plt.scatter(concat[128:,0], concat[128:,1])
+
+    tsne = TSNE(n_components=2, perplexity=15, random_state=42)
+    concat_dtw = dtw.distance_matrix_fast(concat.astype(np.double))
+
+    print(concat_dtw.shape)
+
+    concat_tsne = tsne.fit_transform(concat_dtw)
+    
+    
+    plt.scatter(concat_tsne[:128,0], concat_tsne[:128,1])
+    plt.scatter(concat_tsne[128:,0], concat_tsne[128:,1])
 
     plt.title(f'{dataset_name} Scatter Plot of First Layer Filters')
     plt.xlabel('Filter')
